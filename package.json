@@ -1,0 +1,26 @@
+{
+  "name": "deepseek-pulse",
+  "displayName": "DeepSeek Pulse",
+  "description": "Monitor DeepSeek and mainstream AI gateway load/traffic windows directly within your Cursor status bar.",
+  "version": "1.0.0",
+  "publisher": "local",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com"
+  },
+  "categories": ["Other"],
+  "extensionKind": ["ui"],
+  "activationEvents": ["onStartupFinished"],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "deepseek-pulse.toggleProvider",
+        "title": "DeepSeek Pulse: Toggle Monitored AI Provider"
+      }
+    ]
+  }
+}
