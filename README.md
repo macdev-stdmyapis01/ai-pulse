@@ -1,74 +1,117 @@
-# DeepSeek Pulse
+<div align="center">
 
-> Know when DeepSeek API costs 2×. Beat peak hours. Cut your API bill.
+<img src="icon.png" alt="PeakGuard" width="128" height="128" />
 
-DeepSeek V4 charges 2× during Beijing business hours. This extension shows you exactly where you stand — before you burn budget on a peak-hour Composer session.
+# PeakGuard
 
-```
-◉ DS · off-peak · $0.14/M     safe to run
-◑ DS · peak in 18m · $0.14/M  finish soon
-⚡ DS · PEAK · $0.28/M        switch provider or wait
-```
+**Know before you call. Save before you burn.**
 
----
+DeepSeek V4 charges 2× during Beijing business hours.  
+PeakGuard shows you exactly where you stand — before you burn budget on a peak-hour Composer session.
 
-## Install
+[![Version](https://img.shields.io/badge/version-1.0.0-blue?style=flat-square)](https://github.com/macdev-stdmyapis01/ai-pulse)
+[![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE)
+[![VS Code](https://img.shields.io/badge/VS%20Code-%5E1.85.0-blue?style=flat-square)](https://code.visualstudio.com)
+[![Cursor](https://img.shields.io/badge/Cursor-compatible-purple?style=flat-square)](https://cursor.sh)
 
-Install from the VS Code Marketplace or:
-
-```bash
-code --install-extension deepseek-pulse-1.0.0.vsix
-```
-
-Works immediately after install — no configuration required.
+</div>
 
 ---
 
-## Peak windows
+## Why PeakGuard
 
-DeepSeek V4-Flash peak hours (Beijing time / UTC):
+DeepSeek introduced time-based pricing for V4 — the first major AI provider to do so. During peak hours (Beijing business hours), every API call costs **2× the normal rate**. A single heavy Composer session can silently cost double without any warning.
 
-| Beijing | UTC | Your cost |
-|---|---|---|
-| 09:00 – 12:00 | 01:00 – 04:00 | 2× normal |
-| 14:00 – 18:00 | 06:00 – 10:00 | 2× normal |
-| All other hours | Off-peak | Normal rate |
-
-> **Note:** 2× surcharge has been announced but is not yet live as of August 2026.
-> The extension tracks peak windows now so you are ready when it activates.
+PeakGuard puts the status in your status bar. One glance tells you whether to run that refactor now or wait 20 minutes.
 
 ---
 
-## Status bar states
+## Status Bar States
 
 | State | Display | Color | Meaning |
 |---|---|---|---|
-| Off-peak | `◉ DS · off-peak · $0.14/M` | Emerald | Safe to run heavy sessions |
-| Approaching | `◑ DS · peak in 18m · $0.14/M` | Yellow | Finish your session soon |
-| Peak | `⚡ DS · PEAK · $0.28/M` | Amber | Costs 2× — switch or wait |
+| Off-peak | `◉ DS · off-peak · $0.14/M` | 🟢 Emerald | Safe — run heavy sessions now |
+| Approaching | `◑ DS · peak in 18m · $0.14/M` | 🟡 Yellow | Finish your session soon |
+| Peak window | `⏸ DS · peak window · $0.14/M` | 🟠 Amber | Surcharge window active |
+| Peak active | `⚡ DS · PEAK · $0.28/M` | 🟠 Amber | Costs 2× — switch or wait |
+
+> The 2× surcharge has been announced by DeepSeek but is not yet enforced. PeakGuard tracks the windows now so you're ready the moment it activates.
+
+---
+
+## Peak Windows
+
+DeepSeek V4 peak hours run twice daily on Beijing time:
+
+| Beijing (CST) | UTC | Impact |
+|---|---|---|
+| 09:00 – 12:00 | 01:00 – 04:00 | 2× input + output pricing |
+| 14:00 – 18:00 | 06:00 – 10:00 | 2× input + output pricing |
+
+PeakGuard converts these to **your local timezone automatically** — no configuration required. A developer in New York, London, or Mumbai all see the correct local times.
+
+---
+
+## Features
+
+- **Zero configuration** — installs and works immediately with DeepSeek V4-Flash pre-configured
+- **Timezone-safe** — all logic runs on UTC internally; display uses your OS timezone automatically
+- **Remote SSH aware** — set `peakGuard.displayTimezone` if your server timezone differs from your local machine
+- **Hover tooltip** — shows current pricing, next peak time in your local timezone, and a smart suggestion
+- **Click panel** — opens a detail view with pricing breakdown, peak windows, and next transition time
+- **Command palette** — switch providers or add custom providers without touching config files
+- **Extensible** — add any provider with custom peak windows and pricing via `settings.json`
+- **Zero network calls** — all logic is local time math; works offline, no telemetry
+
+---
+
+## Quick Start
+
+### Install from VSIX
+
+```bash
+cursor --install-extension peakguard-1.0.0.vsix
+# or
+code --install-extension peakguard-1.0.0.vsix
+```
+
+### Install from Source
+
+```bash
+git clone https://github.com/macdev-stdmyapis01/ai-pulse.git
+cd ai-pulse
+npm install --save-dev typescript @types/vscode@1.85.0 @types/node
+npx tsc
+vsce package
+cursor --install-extension peakguard-1.0.0.vsix
+```
 
 ---
 
 ## Commands
 
-| Command | What it does |
+| Command | Description |
 |---|---|
-| `DeepSeek Pulse: Switch Provider` | Change the active provider shown in the status bar |
-| `DeepSeek Pulse: Add Provider` | Add a custom provider with your own peak windows and pricing |
-| `DeepSeek Pulse: Open Panel` | Open the detail panel (or click the status bar item) |
-| `DeepSeek Pulse: Refresh` | Force a reload of config and state |
+| `PeakGuard: Switch Provider` | Change the active provider shown in the status bar |
+| `PeakGuard: Add Provider` | Add a custom provider with your own peak windows and pricing |
+| `PeakGuard: Open Panel` | Open the detail panel (or click the status bar item) |
+| `PeakGuard: Refresh` | Force reload of config and state |
 
 ---
 
-## Add your own providers
+## Add Your Own Providers
 
-Via command palette: `> DeepSeek Pulse: Add Provider`
+PeakGuard is built for any LLM API provider, not just DeepSeek. Add a provider in 60 seconds via command palette:
+
+```
+> PeakGuard: Add Provider
+```
 
 Or directly in `settings.json`:
 
 ```json
 {
-  "deepseekPulse.providers": [
+  "peakGuard.providers": [
     {
       "id": "my-groq",
       "name": "Groq Llama-70B",
@@ -83,8 +126,8 @@ Or directly in `settings.json`:
       },
       "peak_windows": [],
       "warning_minutes": 20,
-      "source": "https://console.groq.com/docs/rate-limits",
-      "last_verified": "2026-08-09"
+      "source": "https://console.groq.com",
+      "last_verified": "2026-08-10"
     }
   ]
 }
@@ -92,49 +135,89 @@ Or directly in `settings.json`:
 
 ---
 
-## Settings
+## Settings Reference
 
 | Setting | Default | Description |
 |---|---|---|
-| `deepseekPulse.activeProvider` | `deepseek-v4-flash` | Currently active provider ID |
-| `deepseekPulse.warningMinutes` | `20` | Minutes before peak to show approaching state |
-| `deepseekPulse.showPrice` | `true` | Show price per 1M tokens in status bar |
-| `deepseekPulse.currency` | `USD` | Currency for price display |
-| `deepseekPulse.displayTimezone` | `auto` | Your display timezone. Set explicitly if using Remote SSH |
-| `deepseekPulse.providers` | `[]` | Custom provider definitions |
+| `peakGuard.activeProvider` | `deepseek-v4-flash` | ID of the currently active provider |
+| `peakGuard.warningMinutes` | `20` | Minutes before peak to show the approaching state |
+| `peakGuard.showPrice` | `true` | Show input price per 1M tokens in the status bar |
+| `peakGuard.currency` | `USD` | Currency for price display (`USD` or `EUR`) |
+| `peakGuard.displayTimezone` | `auto` | Your local timezone for display. Set explicitly when using Remote SSH (e.g. `America/New_York`) |
+| `peakGuard.providers` | `[]` | Array of custom provider definitions |
 
-### Remote SSH note
+---
 
-If you use Cursor with Remote SSH, the extension runs on the remote machine. Set `displayTimezone` to your local timezone so peak times display correctly:
+## How It Works
 
-```json
-{
-  "deepseekPulse.displayTimezone": "America/New_York"
-}
+PeakGuard is intentionally simple. The entire peak calculation is pure UTC time math with no network dependency:
+
+```
+Every 60 seconds:
+  get current UTC time
+  compare against provider peak windows (stored in UTC)
+  if inside peak window  → PEAK state
+  if within warning_minutes of peak → APPROACHING state
+  otherwise → OFFPEAK state
+
+Display times are converted to your OS timezone for readability.
+Peak logic never touches your local timezone — timezone-safe by design.
 ```
 
 ---
 
-## How it works
+## DeepSeek V4 Pricing Reference
 
-- Peak windows are stored in UTC — your OS timezone never affects the calculation
-- Status bar updates every 60 seconds
-- Zero network calls — all logic is local time math
-- Works offline, works across timezones, works on Remote SSH
+| | Cache miss | Cache hit | Output |
+|---|---|---|---|
+| **Off-peak** | $0.14 / 1M | $0.0028 / 1M | $0.28 / 1M |
+| **Peak (2×)** | $0.28 / 1M | $0.0056 / 1M | $0.56 / 1M |
+
+Cache hits are ~98% cheaper than cache misses. On a heavy 8-turn Composer session with an 80K-token context, staying off-peak saves approximately 68% of total input costs.
 
 ---
 
-## Resource usage
+## Resource Footprint
 
 | Resource | Usage |
 |---|---|
-| RAM | ~2–4 MB idle |
+| RAM (idle) | ~2–4 MB |
+| RAM (panel open) | ~10–16 MB |
 | Disk | ~500 KB installed |
-| Network | Zero outbound calls |
+| Network | Zero — all logic is local |
 | CPU | <0.5ms per 60-second tick |
+
+---
+
+## Roadmap
+
+- [ ] v1.1 — Multi-provider smart summary in status bar
+- [ ] v1.2 — Automatic cooldown detection on rate-limited providers  
+- [ ] v1.3 — Remote config feed for live pricing updates without extension updates
+- [ ] v2.0 — Native Marketplace publish under Nagvera Technologies
+
+---
+
+## Contributing
+
+Contributions welcome. If a provider's peak windows change or pricing updates, open a PR against `providers.json` — that's the fastest path to keeping data current for everyone.
+
+1. Fork the repo
+2. Update `providers.json` with corrected data and a new `last_verified` date
+3. Open a PR with a link to the official pricing source
 
 ---
 
 ## License
 
-MIT
+MIT © [Nagvera Technologies](https://github.com/macdev-stdmyapis01)
+
+---
+
+<div align="center">
+
+Built for developers who run heavy AI Composer sessions and want to stop paying double without knowing it.
+
+**[Report an issue](https://github.com/macdev-stdmyapis01/ai-pulse/issues) · [Request a feature](https://github.com/macdev-stdmyapis01/ai-pulse/issues)**
+
+</div>
