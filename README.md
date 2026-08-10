@@ -9,7 +9,7 @@
 DeepSeek V4 charges 2× during Beijing business hours.  
 PeakGuard shows you exactly where you stand — before you burn budget on a peak-hour Composer session.
 
-[![Version](https://img.shields.io/badge/version-1.0.0-blue?style=flat-square)](https://github.com/macdev-stdmyapis01/ai-pulse)
+[![Version](https://img.shields.io/badge/version-1.1.0-blue?style=flat-square)](https://github.com/macdev-stdmyapis01/ai-pulse)
 [![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE)
 [![VS Code](https://img.shields.io/badge/VS%20Code-%5E1.85.0-blue?style=flat-square)](https://code.visualstudio.com)
 [![Cursor](https://img.shields.io/badge/Cursor-compatible-purple?style=flat-square)](https://cursor.sh)
