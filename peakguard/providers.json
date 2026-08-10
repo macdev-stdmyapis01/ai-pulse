@@ -39,12 +39,12 @@
       "pricing": {
         "offpeak": {
           "input_miss": 0.435,
-          "input_hit": 0.003625,
+          "input_hit": 0.0036,
           "output": 0.87
         },
         "peak": {
           "input_miss": 0.87,
-          "input_hit": 0.00725,
+          "input_hit": 0.0072,
           "output": 1.74
         }
       },

@@ -3,7 +3,7 @@
   "displayName": "PeakGuard",
   "description": "Know when AI API costs spike. Avoid peak hours. Cut your LLM bill.",
   "version": "1.1.0",
-  "publisher": "your-publisher-name",
+  "publisher": "nagvera",
   "engines": { "vscode": "^1.85.0" },
   "categories": ["Other"],
   "keywords": ["deepseek", "api", "cost", "peak", "pricing", "cursor", "llm", "ai"],
