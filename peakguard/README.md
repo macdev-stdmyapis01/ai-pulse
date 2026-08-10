@@ -70,16 +70,16 @@ PeakGuard converts these to **your local timezone automatically** — no configu
 ### Install from VSIX
 
 ```bash
-cursor --install-extension peakguard-1.0.0.vsix
+cursor --install-extension peakguard-1.1.0.vsix
 # or
-code --install-extension peakguard-1.0.0.vsix
+code --install-extension peakguard-1.1.0.vsix
 ```
 
 ### Install from Source
 
 ```bash
 git clone https://github.com/macdev-stdmyapis01/ai-pulse.git
-cd ai-pulse
+cd ai-pulse/peakguard
 npm install --save-dev typescript @types/vscode@1.85.0 @types/node
 npx tsc
 vsce package
@@ -166,12 +166,21 @@ Peak logic never touches your local timezone — timezone-safe by design.
 
 ---
 
-## DeepSeek V4 Pricing Reference
+## **DeepSeek V4 Pricing Reference**
 
-| | Cache miss | Cache hit | Output |
+### **V4-Flash**
+
+| | Cache Miss | Cache Hit | Output |
 |---|---|---|---|
 | **Off-peak** | $0.14 / 1M | $0.0028 / 1M | $0.28 / 1M |
 | **Peak (2×)** | $0.28 / 1M | $0.0056 / 1M | $0.56 / 1M |
+
+### **V4-Pro**
+
+| | Cache Miss | Cache Hit | Output |
+|---|---|---|---|
+| **Off-peak** | $0.435 / 1M | $0.0036 / 1M | $0.87 / 1M |
+| **Peak (2×)** | $0.870 / 1M | $0.0072 / 1M | $1.74 / 1M |
 
 Cache hits are ~98% cheaper than cache misses. On a heavy 8-turn Composer session with an 80K-token context, staying off-peak saves approximately 68% of total input costs.
 
@@ -189,10 +198,10 @@ Cache hits are ~98% cheaper than cache misses. On a heavy 8-turn Composer sessio
 
 ---
 
-## Roadmap
+## **Roadmap**
 
-- [ ] v1.1 — Multi-provider smart summary in status bar
-- [ ] v1.2 — Automatic cooldown detection on rate-limited providers  
+- [x] v1.1 — Full pricing fields (cache miss, cache hit, output) for add provider flow
+- [ ] v1.2 — Inline Add Provider form in panel (no command palette needed)
 - [ ] v1.3 — Remote config feed for live pricing updates without extension updates
 - [ ] v2.0 — Native Marketplace publish under Nagvera Technologies
 
@@ -218,6 +227,6 @@ MIT © [Nagvera Technologies](https://github.com/macdev-stdmyapis01)
 
 Built for developers who run heavy AI Composer sessions and want to stop paying double without knowing it.
 
-**[Report an issue](https://github.com/macdev-stdmyapis01/ai-pulse/issues) · [Request a feature](https://github.com/macdev-stdmyapis01/ai-pulse/issues)**
+**[Report a PeakGuard issue](https://github.com/macdev-stdmyapis01/ai-pulse/issues/new?labels=peakguard,bug&title=[PeakGuard]) · [Request a feature](https://github.com/macdev-stdmyapis01/ai-pulse/issues/new?labels=peakguard,enhancement&title=[PeakGuard])**
 
 </div>
