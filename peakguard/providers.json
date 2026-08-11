@@ -21,40 +21,18 @@
         }
       },
       "peak_windows": [
-        { "start_utc": "01:00", "end_utc": "04:00" },
-        { "start_utc": "06:00", "end_utc": "10:00" }
-      ],
-      "warning_minutes": 20,
-      "source": "https://api-docs.deepseek.com/quick_start/pricing",
-      "last_verified": "2026-08-09"
-    },
-    {
-      "id": "deepseek-v4-pro",
-      "name": "DeepSeek V4-Pro",
-      "model": "deepseek-v4-pro",
-      "shortLabel": "DS Pro",
-      "timezone": "Asia/Shanghai",
-      "peak_pricing_active": false,
-      "peak_pricing_announced": true,
-      "pricing": {
-        "offpeak": {
-          "input_miss": 0.435,
-          "input_hit": 0.0036,
-          "output": 0.87
+        {
+          "start_utc": "01:00",
+          "end_utc": "04:00"
         },
-        "peak": {
-          "input_miss": 0.87,
-          "input_hit": 0.0072,
-          "output": 1.74
+        {
+          "start_utc": "06:00",
+          "end_utc": "10:00"
         }
-      },
-      "peak_windows": [
-        { "start_utc": "01:00", "end_utc": "04:00" },
-        { "start_utc": "06:00", "end_utc": "10:00" }
       ],
       "warning_minutes": 20,
       "source": "https://api-docs.deepseek.com/quick_start/pricing",
-      "last_verified": "2026-08-09"
+      "last_verified": "2026-08-10"
     }
   ]
 }
