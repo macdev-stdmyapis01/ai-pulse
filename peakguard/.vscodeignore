@@ -1,0 +1,7 @@
+.gitignore
+tsconfig.json
+extension.ts
+node_modules/
+out/extension.js.map
+*.vsix
+.DS_Store
