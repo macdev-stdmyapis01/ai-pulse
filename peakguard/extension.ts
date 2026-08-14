@@ -283,7 +283,7 @@ function buildPanelHtml(
   p: Provider,
   providers: Provider[],
   activeId: string,
-  zone: string
+  _zone: string
 ): string {
   const isPeak   = r.state === 'peak' || r.state === 'peak_announced';
   const isOffpeak = !isPeak;
@@ -313,8 +313,9 @@ function buildPanelHtml(
   const pillBg      = isPeak ? 'rgba(245,158,11,0.12)' : 'rgba(34,197,94,0.10)';
   const pillColor   = isPeak ? AMBER  : GREEN;
   const pillBorder  = isPeak ? 'rgba(245,158,11,0.30)' : 'rgba(34,197,94,0.25)';
-  const missColor   = isPeak ? RED    : GREEN;
-  const hitColor    = isPeak ? RED    : GREEN;
+  const isHardPeak  = r.state === 'peak';
+  const missColor   = isHardPeak ? RED : (r.state === 'peak_announced' ? AMBER : GREEN);
+  const hitColor    = isHardPeak ? RED : (r.state === 'peak_announced' ? AMBER : GREEN);
   const nextColor   = isPeak ? RED    : AMBER;
   const sugBg       = isPeak ? 'rgba(245,158,11,0.08)' : 'rgba(34,197,94,0.07)';
   const sugColor    = isPeak ? '#d97706' : '#16a34a';
@@ -326,7 +327,7 @@ function buildPanelHtml(
   const windowLines = p.peak_windows.map(w =>
     `<div class="t-row">
       <span class="t-label">${w.start_utc}–${w.end_utc} UTC</span>
-      <span class="t-val mono">${localTime(w.start_utc, zone)} – ${localTime(w.end_utc, zone)}</span>
+      <span class="t-val mono local-time" data-start-utc="${w.start_utc}" data-end-utc="${w.end_utc}">${w.start_utc} – ${w.end_utc}</span>
     </div>`
   ).join('');
  
@@ -353,13 +354,6 @@ function buildPanelHtml(
       </div>
     </div>`;
   }).join('');
- 
-  const notice = p.peak_pricing_announced && !p.peak_pricing_active
-    ? `<div style="margin:0 14px 8px;padding:6px 10px;border-radius:6px;background:rgba(245,158,11,0.08);border:0.5px solid rgba(245,158,11,0.25);color:#d97706;font-size:10px;display:flex;align-items:center;gap:5px">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-        Surcharge announced — not yet live
-      </div>`
-    : '';
  
   return `<!DOCTYPE html>
 <html lang="en">
@@ -444,8 +438,6 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;font-size:1
   ${sugText}
 </div>
  
-${notice}
- 
 <div class="providers">
   <div class="prov-hdr">PROVIDERS</div>
   ${providerRows}
@@ -468,6 +460,21 @@ ${notice}
   function deleteProvider(id) { vscode.postMessage({ command: 'deleteProvider', id }); }
   function addProvider()      { vscode.postMessage({ command: 'addProvider' }); }
   function refresh()          { vscode.postMessage({ command: 'refresh' }); }
+ 
+  function toLocal(utcTime) {
+    try {
+      const [h, m] = utcTime.split(':').map(Number);
+      const d = new Date();
+      d.setUTCHours(h, m, 0, 0);
+      return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', timeZoneName: 'short' });
+    } catch { return utcTime + ' UTC'; }
+  }
+ 
+  document.querySelectorAll('.local-time').forEach(el => {
+    const start = el.getAttribute('data-start-utc');
+    const end   = el.getAttribute('data-end-utc');
+    if (start && end) { el.textContent = toLocal(start) + ' \u2013 ' + toLocal(end); }
+  });
 </script>
 </body>
 </html>`;
