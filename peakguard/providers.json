@@ -6,18 +6,18 @@
       "model": "deepseek-v4-flash",
       "shortLabel": "DS",
       "timezone": "Asia/Shanghai",
-      "peak_pricing_active": false,
+      "peak_pricing_active": true,
       "peak_pricing_announced": true,
       "pricing": {
         "offpeak": {
-          "input_miss": 0.14,
-          "input_hit": 0.0028,
-          "output": 0.28
+          "input_miss": 0.22,
+          "input_hit": 0.007,
+          "output": 0.66
         },
         "peak": {
-          "input_miss": 0.28,
-          "input_hit": 0.0056,
-          "output": 0.56
+          "input_miss": 0.44,
+          "input_hit": 0.014,
+          "output": 1.32
         }
       },
       "peak_windows": [
@@ -32,7 +32,41 @@
       ],
       "warning_minutes": 20,
       "source": "https://api-docs.deepseek.com/quick_start/pricing",
-      "last_verified": "2026-08-10"
+      "last_verified": "2026-08-16"
+    },
+    {
+      "id": "deepseek-v4-pro",
+      "name": "DeepSeek V4-Pro",
+      "model": "deepseek-v4-pro",
+      "shortLabel": "DSP",
+      "timezone": "Asia/Shanghai",
+      "peak_pricing_active": true,
+      "peak_pricing_announced": true,
+      "pricing": {
+        "offpeak": {
+          "input_miss": 0.66,
+          "input_hit": 0.022,
+          "output": 1.98
+        },
+        "peak": {
+          "input_miss": 1.32,
+          "input_hit": 0.044,
+          "output": 3.96
+        }
+      },
+      "peak_windows": [
+        {
+          "start_utc": "01:00",
+          "end_utc": "04:00"
+        },
+        {
+          "start_utc": "06:00",
+          "end_utc": "10:00"
+        }
+      ],
+      "warning_minutes": 20,
+      "source": "https://api-docs.deepseek.com/quick_start/pricing",
+      "last_verified": "2026-08-16"
     }
   ]
 }

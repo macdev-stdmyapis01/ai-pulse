@@ -190,7 +190,7 @@ function buildTooltip(r: StateResult, p: Provider, zone: string): vscode.Markdow
 // SECTION 5 — PROVIDER LOADING
 // ─────────────────────────────────────────────
  
-const BUNDLED_IDS = new Set(['deepseek-v4-flash']);
+const BUNDLED_IDS = new Set(['deepseek-v4-flash', 'deepseek-v4-pro']);
  
 function readConfig(): AppConfig {
   const c = vscode.workspace.getConfiguration('peakGuard');
@@ -272,6 +272,48 @@ async function addProviderFlow(): Promise<Provider | undefined> {
   };
 }
  
+async function editProviderFlow(existing: Provider): Promise<Provider | undefined> {
+  const EDIT_STEPS = [
+    { group: 'Off-peak', prompt: 'Input · Cache Miss per 1M tokens (USD)', numeric: true,  field: () => String(existing.pricing.offpeak.input_miss) },
+    { group: 'Off-peak', prompt: 'Input · Cache Hit per 1M tokens (USD)',  numeric: true,  field: () => String(existing.pricing.offpeak.input_hit)  },
+    { group: 'Off-peak', prompt: 'Output · Generated per 1M tokens (USD)', numeric: true,  field: () => String(existing.pricing.offpeak.output)      },
+    { group: 'Peak',     prompt: 'Input · Cache Miss per 1M tokens (USD)', numeric: true,  field: () => String(existing.pricing.peak.input_miss)     },
+    { group: 'Peak',     prompt: 'Input · Cache Hit per 1M tokens (USD)',  numeric: true,  field: () => String(existing.pricing.peak.input_hit)      },
+    { group: 'Peak',     prompt: 'Output · Generated per 1M tokens (USD)', numeric: true,  field: () => String(existing.pricing.peak.output)         },
+    { group: 'Status',   prompt: 'Is peak surcharge currently active? (yes / no)', numeric: false, field: () => existing.peak_pricing_active ? 'yes' : 'no' },
+    { group: 'Windows',  prompt: 'Peak windows in UTC — HH:MM-HH:MM, comma separated', numeric: false,
+      field: () => existing.peak_windows.map(w => `${w.start_utc}-${w.end_utc}`).join(', ') }
+  ] as const;
+
+  const answers: string[] = [];
+  for (let i = 0; i < EDIT_STEPS.length; i++) {
+    const s = EDIT_STEPS[i];
+    const val = await vscode.window.showInputBox({
+      title:         `Edit ${existing.name} (${i + 1}/${EDIT_STEPS.length}) — ${s.group}`,
+      prompt:        s.prompt,
+      value:         s.field(),
+      validateInput: s.numeric ? v => isNaN(Number(v)) ? 'Enter a number' : null : undefined
+    });
+    if (val === undefined) { return; }
+    answers.push(val);
+  }
+  const [offMiss, offHit, offOut, pkMiss, pkHit, pkOut, activeStr, wins] = answers;
+  const rawWins = wins.split(',').map(s => s.trim()).filter(Boolean)
+    .map(s => { const [a, b] = s.split('-').map(t => t.trim()); return { start_utc: a, end_utc: b }; })
+    .filter(w => w.start_utc && w.end_utc);
+  return {
+    ...existing,
+    peak_pricing_active:    activeStr.trim().toLowerCase().startsWith('y'),
+    peak_pricing_announced: true,
+    pricing: {
+      offpeak: { input_miss: Number(offMiss), input_hit: Number(offHit), output: Number(offOut) },
+      peak:    { input_miss: Number(pkMiss),  input_hit: Number(pkHit),  output: Number(pkOut)  }
+    },
+    peak_windows:  prepareWindows(rawWins),
+    last_verified: new Date().toISOString().split('T')[0]
+  };
+}
+
 // ─────────────────────────────────────────────
 // SECTION 7 — PANEL HTML
 // Explicit hex colors — no broken vscode color variables
@@ -341,8 +383,8 @@ function buildPanelHtml(
     const rowBg   = isAct ? (isPeak ? 'rgba(245,158,11,0.10)' : 'rgba(34,197,94,0.08)') : 'transparent';
     const rowBdr  = isAct ? (isPeak ? '0.5px solid rgba(245,158,11,0.28)' : '0.5px solid rgba(34,197,94,0.22)') : '0.5px solid transparent';
     const acBadge = isAct ? `<span class="badge" style="background:${isPeak ? 'rgba(245,158,11,0.14)' : 'rgba(34,197,94,0.11)'};color:${isPeak ? AMBER : GREEN};border:0.5px solid ${isPeak ? 'rgba(245,158,11,0.28)' : 'rgba(34,197,94,0.22)'}">active</span>` : '';
-    const biBadge = isBlt ? `<span class="badge" style="background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.3);border:0.5px solid rgba(255,255,255,0.10)">built-in</span>` : '';
-    const delBtn  = !isBlt ? `<button class="del" onclick="event.stopPropagation();deleteProvider('${p2.id}')" aria-label="Remove ${p2.name}">✕</button>` : '';
+    const editBtn  = isBlt  ? `<button class="del" onclick="event.stopPropagation();editProvider('${p2.id}')" aria-label="Edit ${p2.name}" title="Edit rates">✎</button>` : '';
+    const delBtn   = !isBlt ? `<button class="del" onclick="event.stopPropagation();deleteProvider('${p2.id}')" aria-label="Remove ${p2.name}">✕</button>` : '';
     return `<div class="prov-row" style="background:${rowBg};border:${rowBdr}" onclick="switchProvider('${p2.id}')">
       <div class="prov-left">
         <div class="prov-dot" style="background:${dotCol}"></div>
@@ -350,7 +392,7 @@ function buildPanelHtml(
       </div>
       <div class="prov-right">
         <span class="prov-state" style="color:${sCol}">${sTxt}</span>
-        ${acBadge}${biBadge}${delBtn}
+        ${acBadge}${editBtn}${delBtn}
       </div>
     </div>`;
   }).join('');
@@ -458,6 +500,7 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;font-size:1
   const vscode = acquireVsCodeApi();
   function switchProvider(id) { vscode.postMessage({ command: 'switchProvider', id }); }
   function deleteProvider(id) { vscode.postMessage({ command: 'deleteProvider', id }); }
+  function editProvider(id)   { vscode.postMessage({ command: 'editProvider', id }); }
   function addProvider()      { vscode.postMessage({ command: 'addProvider' }); }
   function refresh()          { vscode.postMessage({ command: 'refresh' }); }
  
@@ -529,6 +572,17 @@ export function activate(ctx: vscode.ExtensionContext): void {
     reload(); tick(); refreshPanel();
     vscode.window.showInformationMessage('PeakGuard: provider removed.');
   }
+
+  async function editProvider(id: string): Promise<void> {
+    const existing = providers.find(p => p.id === id);
+    if (!existing) { return; }
+    const updated = await editProviderFlow(existing);
+    if (!updated) { return; }
+    const userProviders = cfg.providers.filter(p => p.id !== id);
+    await peakGuardCfg().update('providers', [...userProviders, updated], vscode.ConfigurationTarget.Global);
+    reload(); tick(); refreshPanel();
+    vscode.window.showInformationMessage(`PeakGuard: ${updated.name} rates updated.`);
+  }
  
   const bar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
   bar.command = 'peakGuard.openPanel';
@@ -568,6 +622,7 @@ export function activate(ctx: vscode.ExtensionContext): void {
       switch (msg.command) {
         case 'switchProvider': await setActive(msg.id); refreshPanel(); break;
         case 'deleteProvider': await deleteProvider(msg.id); break;
+        case 'editProvider':   await editProvider(msg.id); break;
         case 'addProvider':    await addProvider(); break;
         case 'refresh':        reload(); tick(); break;
       }
